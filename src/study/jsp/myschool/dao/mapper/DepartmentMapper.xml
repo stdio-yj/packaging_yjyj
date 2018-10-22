@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 이 파일의 경로를 config.xml에 명시해야 한다. -->
+
+<!-- 이 XML의 구조대로 구현될 클래스의 이름 -->
+<mapper namespace="DepartmentMapper">
+
+	<!-- Beans 클래스의 객체이름(id)과 클래스이름(type)을 명시한다. -->
+	<resultMap id="department"
+		type="study.jsp.myschool.model.Department">
+		<!-- Beans의 멤버변수(property)이름과 대상 테이블의 컬럼(column)을 연결한다. -->
+		<result property="deptno" column="deptno" />
+		<result property="dname" column="dname" />
+		<result property="loc" column="loc" />
+	</resultMap>
+
+	<!-- 학과 목록 조회하기 -->
+	<select id="selectDepartmentList"
+		parameterType="study.jsp.myschool.model.Department"
+		resultMap="department">
+		SELECT deptno, dname, loc FROM department
+		<where>
+			<if test="dname != null and dname != ''">
+				dname LIKE concat('%', #{dname}, '%')
+			</if>
+		</where>
+ 		ORDER BY deptno DESC
+		LIMIT #{limitStart}, #{listCount}
+	</select>
+	
+	<!-- 데이터 수 얻기 -->
+	<select id="selectDepartmentCount"
+		parameterType="study.jsp.myschool.model.Department"
+		resultType="int">
+		SELECT count(deptno) FROM department
+		<where>
+			<if test="dname != null and dname != ''">
+				dname LIKE concat('%', #{dname}, '%')
+			</if>
+		</where>
+	</select>	
+	
+	<select id="selectDepartmentItem"
+		parameterType="study.jsp.myschool.model.Department"
+		resultMap="department">
+		<!-- "#{변수명}" 으로 표시된 곳에 파라미터로 전달된 Beans의 멤버변수값이 치환된다. -->
+		SELECT deptno, dname, loc
+		FROM department
+		WHERE deptno=#{deptno}
+	</select>
+	
+	<insert id="insertDepartmentItem"
+		parameterType="study.jsp.myschool.model.Department"
+		useGeneratedKeys="true" keyProperty="deptno">
+		<!-- "#{변수명}" 으로 표시된 곳에 파라미터로 전달된 Beans의 멤버변수값이 치환된다. -->
+		INSERT INTO department ( dname, loc ) VALUES ( #{dname}, #{loc} )
+	</insert>
+	
+	<delete id="deleteDepartmentItem"
+		parameterType="study.jsp.myschool.model.Department">
+		<!-- "#{변수명}" 으로 표시된 곳에 파라미터로 전달된 Beans의 멤버변수값이 치환된다. -->
+		DELETE FROM department WHERE deptno=#{deptno}
+	</delete>
+	<update id="updateDepartmentItem"
+		parameterType="study.jsp.myschool.model.Department">
+		<!-- "#{변수명}" 으로 표시된 곳에 파라미터로 전달된 Beans의 멤버변수값이 치환된다. -->
+		UPDATE Department SET
+		dname=#{dname}, loc=#{loc} WHERE deptno=#{deptno}
+	</update>
+</mapper>
